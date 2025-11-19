@@ -166,7 +166,7 @@ Handles natural language processing without ML:
 **Regex Patterns**:
 
 ```typescript
-// Attendees: "with Evan, Efrem and Charlie"
+// Attendees: "with Evan, Efrem and Haile"
 /with\s+([^f]+?)(?:\s+for\s+)/i
 
 // Days: "Monday", "Wednesday", etc.
@@ -229,7 +229,7 @@ getDatesForMonth(2025, 12, ['monday', 'wednesday'])
 **Example**:
 ```
 Input: "ali"
-Available: ["Evan", "Efrem", "Charlie"]
+Available: ["Evan", "Efrem", "Haile"]
 Process: "Evan".includes("ali") = true
 Output: "Evan"
 ```
@@ -302,7 +302,7 @@ interface CalendarStore {
 ```
 
 **Initial State**:
-- 4 default users (Evan, Efrem, Charlie, Diana)
+- 4 default users (Evan, Efrem, Haile, Diana)
 - Empty timeSlots array
 
 **Mutations**:
