@@ -302,7 +302,7 @@ interface CalendarStore {
 ```
 
 **Initial State**:
-- 4 default users (Evan, Efrem, Haile, Diana)
+- 4 default users (Evan, Efrem, Haile, Nathan)
 - Empty timeSlots array
 
 **Mutations**:
