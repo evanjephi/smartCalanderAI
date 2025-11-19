@@ -182,8 +182,8 @@ Dev Server:   Running at localhost:3000
    book meeting with Evan for Monday at 14:00-15:00 for December
    ```
 3. Click "Submit Request"
-4. ✅ See 4 bookings created
-5. ✅ View in calendar (Mondays highlighted)
+4.  See 4 bookings created
+5.  View in calendar (Mondays highlighted)
 
 ### More Tests
 
@@ -207,12 +207,12 @@ book [TITLE] with [NAMES] for [DAYS] at [TIME] for [MONTH]
 ### Real Examples
 ```
 ✅ book meeting with Evan for Monday at 10:00-11:00 for December
-✅ book sync with Efrem and Charlie for Mondays, Wednesdays 09:00-10:00 December
+✅ book sync with Efrem and Haile for Mondays, Wednesdays 09:00-10:00 December
 ✅ book workshop with Evan, Efrem for Friday at 09:00-17:00 for December 2025
 ```
 
 ### Supported Elements
-- **Names**: Evan, Efrem, Charlie, Diana (fuzzy matching works!)
+- **Names**: Evan, Efrem, Haile, Nathan (fuzzy matching works!)
 - **Days**: Monday through Sunday
 - **Time**: 24-hour format (HH:MM)
 - **Months**: January through December
@@ -226,8 +226,8 @@ book [TITLE] with [NAMES] for [DAYS] at [TIME] for [MONTH]
 |------|--------------|-------|
 | Evan | Mon-Fri 9AM-5PM | Full week availability |
 | Efrem | Mon-Fri 9AM-5PM | Full week availability |
-| Charlie | Mon-Fri 9AM-5PM | Full week availability |
-| Diana | Mon-Wed 10AM-3PM | Limited to 3 days |
+| Haile | Mon-Fri 9AM-5PM | Full week availability |
+| Nathan | Mon-Wed 10AM-3PM | Limited to 3 days |
 
 **Add more users**: Edit `lib/store.ts` initial state
 
