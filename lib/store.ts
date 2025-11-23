@@ -18,8 +18,8 @@ export const useCalendarStore = create<CalendarStore>((set: any, get: any) => ({
   users: [
     { id: '1', name: 'Evan', email: 'Evan@gmail.com', availability: 'Monday-Friday 9-5' },
     { id: '2', name: 'Efrem', email: 'efrem@gmail.com', availability: 'Monday-Friday 9-5' },
-    { id: '3', name: 'Haile', email: 'charlie@gmail.com', availability: 'Monday-Friday 9-5' },
-    { id: '4', name: 'Nathan', email: 'diana@gmail.com', availability: 'Monday-Wednesday 10-3' },
+    { id: '3', name: 'Haile', email: 'Haile@gmail.com', availability: 'Monday-Friday 9-5' },
+    { id: '4', name: 'Nathan', email: 'Nathan@gmail.com', availability: 'Monday-Wednesday 10-3' },
   ],
   timeSlots: [],
 
