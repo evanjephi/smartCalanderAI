@@ -1,20 +1,53 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import NaturalLanguageInput from '@/components/NaturalLanguageInput';
 import CalendarView from '@/components/CalendarView';
 import BookingSummary from '@/components/BookingSummary';
 import UserList from '@/components/UserList';
 import { useCalendarStore } from '@/lib/store';
 import { createBookingSlots } from '@/lib/bookingEngine';
-import { BookingResult } from '@/types';
+import { BookingResult, TimeSlot } from '@/types';
 
 export default function Home() {
-  const { users, timeSlots, addTimeSlot } = useCalendarStore();
+  const { users, timeSlots, addTimeSlot, setTimeSlots } = useCalendarStore();
   const [bookingResult, setBookingResult] = useState<BookingResult | null>(null);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch bookings from Firebase on page load
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const res = await fetch('/api/bookings-get', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!res.ok) {
+          console.warn('Failed to fetch bookings:', res.status);
+          return;
+        }
+
+        const data = await res.json();
+        const bookings: TimeSlot[] = data.bookings || [];
+
+        if (bookings.length > 0) {
+          // Convert ISO date strings back to Date objects
+          const convertedBookings = bookings.map((b) => ({
+            ...b,
+            date: new Date(b.date),
+          }));
+          setTimeSlots(convertedBookings);
+        }
+      } catch (error) {
+        console.warn('Error fetching bookings:', error);
+      }
+    };
+
+    fetchBookings();
+  }, [setTimeSlots]);
 
   const handleBookingRequest = async (input: string) => {
     setIsLoading(true);
