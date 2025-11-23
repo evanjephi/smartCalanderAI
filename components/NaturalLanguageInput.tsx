@@ -4,16 +4,17 @@ import { useState } from 'react';
 import { Send } from 'lucide-react';
 
 interface NaturalLanguageInputProps {
-  onSubmit: (input: string) => void;
+  onSubmit: (input: string) => void | Promise<void>;
+  isLoading?: boolean;
 }
 
-export default function NaturalLanguageInput({ onSubmit }: NaturalLanguageInputProps) {
+export default function NaturalLanguageInput({ onSubmit, isLoading = false }: NaturalLanguageInputProps) {
   const [input, setInput] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim()) {
-      onSubmit(input);
+      await onSubmit(input);
       setInput('');
     }
   };
@@ -31,7 +32,6 @@ export default function NaturalLanguageInput({ onSubmit }: NaturalLanguageInputP
             id="input"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="E.g., book meetings with Evan, Efrem, Charlie for Mondays and Wednesdays at 10:00-12:00 for December"
             className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
             rows={4}
           />
@@ -39,18 +39,19 @@ export default function NaturalLanguageInput({ onSubmit }: NaturalLanguageInputP
 
         <button
           type="submit"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 font-semibold text-white hover:bg-indigo-700 transition-colors"
+          disabled={isLoading}
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 font-semibold text-white hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send size={18} />
-          Submit Request
+          {isLoading ? 'Processing...' : 'Submit Request'}
         </button>
 
         <div className="rounded-lg bg-blue-50 p-3 text-xs text-gray-700">
           <p className="mb-2 font-semibold">Example formats:</p>
           <ul className="space-y-1">
             <li>• &quot;Book meetings with Evan for Monday at 14:00-15:00&quot;</li>
-            <li>• &quot;Schedule sync with Efrem and Charlie for Mondays, Wednesdays, Fridays 09:00-10:00 in December&quot;</li>
-            <li>• &quot;Book team standup with Diana for weekdays 10:00-10:30 December 2025&quot;</li>
+            <li>• &quot;Schedule sync with Efrem and Haile for Mondays, Wednesdays, Fridays 09:00-10:00 in December&quot;</li>
+            <li>• &quot;Book team standup with Nathan for weekdays 10:00-10:30 December 2025&quot;</li>
           </ul>
         </div>
       </form>
