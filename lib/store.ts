@@ -9,6 +9,7 @@ interface CalendarStore {
   removeUser: (userId: string) => void;
   addTimeSlot: (slot: TimeSlot) => void;
   removeTimeSlot: (slotId: string) => void;
+  setTimeSlots: (slots: TimeSlot[]) => void;
   getUserTimeSlots: (userId: string) => TimeSlot[];
   getAllTimeSlots: () => TimeSlot[];
   getUsers: () => User[];
@@ -41,6 +42,11 @@ export const useCalendarStore = create<CalendarStore>((set: any, get: any) => ({
   removeTimeSlot: (slotId: string) =>
     set((state: any) => ({
       timeSlots: state.timeSlots.filter((s: TimeSlot) => s.id !== slotId),
+    })),
+
+  setTimeSlots: (slots: TimeSlot[]) =>
+    set(() => ({
+      timeSlots: slots,
     })),
 
   getUserTimeSlots: (userId: string) => {
