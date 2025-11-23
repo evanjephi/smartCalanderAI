@@ -12,7 +12,6 @@ export function createBookingSlots(
   const bookings: TimeSlot[] = [];
   const errors: string[] = [];
 
-  // Validate attendees exist
   const availableUserNames = users.map((u) => u.name.toLowerCase());
   const normalizedAttendees: string[] = [];
 
@@ -41,7 +40,6 @@ export function createBookingSlots(
     };
   }
 
-  // Get all matching dates
   const dates = getDatesForMonth(request.year, request.month, request.daysOfWeek);
 
   if (dates.length === 0) {
@@ -52,16 +50,20 @@ export function createBookingSlots(
     };
   }
 
-  // Create a slot for each date
   for (const date of dates) {
     const attendeeIds = normalizedAttendees
       .map((name) => users.find((u) => u.name.toLowerCase() === name.toLowerCase()))
       .filter((user): user is User => user !== undefined)
       .map((u) => u.id);
 
+    // Generate document ID from date and time: YYYY-MM-DD_HH-MM-SS
+    const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
+    const timeStr = request.startTime.replace(':', '-'); // HH-MM
+    const docId = `${dateStr}_${timeStr}_UTC`;
+
     const slot: TimeSlot = {
-      id: generateId(),
-      userId: attendeeIds[0], // Primary organizer
+      id: docId,
+      userId: attendeeIds[0], 
       date,
       startTime: request.startTime,
       endTime: request.endTime,
@@ -118,10 +120,6 @@ export function checkConflicts(
 /**
  * Helper functions
  */
-function generateId(): string {
-  return Math.random().toString(36).substr(2, 9);
-}
-
 function timeToMinutes(time: string): number {
   const [hours, minutes] = time.split(':').map(Number);
   return hours * 60 + minutes;
