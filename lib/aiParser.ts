@@ -1,18 +1,16 @@
 // lib/aiParser.ts
 import { ParsedBookingRequest } from '@/types';
 
-/**
- * Simple AI parser that processes natural language booking requests
- * Supports patterns like: "book meetings with Evan, Efrem, Charlie for Mondays and Wednesdays at 10:00-12:00 for December"
- */
+
+3
 export function parseBookingRequest(input: string): ParsedBookingRequest | null {
   try {
-    // Extract attendees
-    const attendeesMatch = input.match(/with\s+([^f]+?)(?:\s+for\s+)/i);
+    // Extract attendees (supports commas and 'and')
+    const attendeesMatch = input.match(/with\s+([\s\S]+?)(?:\s+for\s+|\s+at\s+|$)/i);
     let attendees: string[] = [];
     if (attendeesMatch) {
       attendees = attendeesMatch[1]
-        .split(/[,\s]+(?:and\s+)?/)
+        .split(/\s*(?:,|and)\s*/i)
         .map((name) => name.trim().toLowerCase())
         .filter((name) => name.length > 0);
     }
@@ -22,14 +20,43 @@ export function parseBookingRequest(input: string): ParsedBookingRequest | null 
     const daysMatches = input.match(daysPattern) || [];
     const daysOfWeek = [...new Set(daysMatches.map((d) => d.toLowerCase()))];
 
-    // Extract time range
-    const timeMatch = input.match(/at\s+(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/i);
+    // Extract time range or single time (supports '9am', '9:00', '9am-10am', '9:00-11:00')
     let startTime = '09:00';
     let endTime = '10:00';
-    if (timeMatch) {
-      const [, startHour, startMin, endHour, endMin] = timeMatch;
-      startTime = `${startHour.padStart(2, '0')}:${startMin}`;
-      endTime = `${endHour.padStart(2, '0')}:${endMin}`;
+
+    const rangeRegex = /at\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\s*(?:-|to)\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/i;
+    const singleRegex = /at\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)(?!\s*(?:-|to))/i;
+
+    function parseTimeString(t: string): string {
+      const cleaned = t.trim().toLowerCase();
+      const ampmMatch = cleaned.match(/(am|pm)$/);
+      let hhmm = cleaned.replace(/\s*(am|pm)$/i, '');
+      if (!hhmm.includes(':')) {
+        hhmm = hhmm + ':00';
+      }
+      let [h, m] = hhmm.split(':').map((s) => parseInt(s, 10));
+      if (ampmMatch) {
+        const ampm = ampmMatch[1];
+        if (ampm === 'pm' && h < 12) h += 12;
+        if (ampm === 'am' && h === 12) h = 0;
+      }
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+
+    const rangeMatch = input.match(rangeRegex);
+    if (rangeMatch) {
+      startTime = parseTimeString(rangeMatch[1]);
+      endTime = parseTimeString(rangeMatch[2]);
+    } else {
+      const singleMatch = input.match(singleRegex);
+      if (singleMatch) {
+        startTime = parseTimeString(singleMatch[1]);
+        // default duration 1 hour
+        const [sh, sm] = startTime.split(':').map(Number);
+        const end = new Date();
+        end.setHours(sh + 1, sm, 0, 0);
+        endTime = `${String(end.getHours()).padStart(2, '0')}:${String(end.getMinutes()).padStart(2, '0')}`;
+      }
     }
 
     // Extract month and year
@@ -62,8 +89,8 @@ export function parseBookingRequest(input: string): ParsedBookingRequest | null 
       year = parseInt(yearMatch[1]);
     }
 
-    // Extract title (if provided after "meeting" keyword)
-    const titleMatch = input.match(/book\s+([^w]+?)(?:\s+with|\s+for)/i);
+    // Extract title (optional) - capture words between 'book' and 'with' or 'for'
+    const titleMatch = input.match(/(?:book|schedule)\s+(?:a\s+|an\s+)?(.+?)\s+(?:with|for)\s+/i);
     const title = titleMatch ? titleMatch[1].trim() : 'Team Meeting';
 
     return {
