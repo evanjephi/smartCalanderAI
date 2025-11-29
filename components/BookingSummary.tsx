@@ -45,16 +45,24 @@ export default function BookingSummary({ result }: BookingSummaryProps) {
                 key={booking.id}
                 className="flex items-center justify-between rounded bg-white p-2 text-sm text-gray-700"
               >
-                <span>
-                  {booking.date.toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </span>
-                <span className="font-mono text-xs text-gray-600">
-                  {booking.startTime} - {booking.endTime}
-                </span>
+                  <div>
+                    <div className="text-sm">
+                      {booking.date instanceof Date
+                        ? booking.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+                        : new Date(String(booking.date)).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      {booking.startTime} - {booking.endTime}
+                    </div>
+                    <div className="text-xs text-gray-700 mt-1">
+                      {/* Prefer explicit fields from booking if present */}
+                      {('workerName' in booking) && ('clientName' in booking) ? (
+                        <span>P: {(booking as any).workerName} - C: {(booking as any).clientName}</span>
+                      ) : booking.title ? (
+                        <span>{booking.title}</span>
+                      ) : null}
+                    </div>
+                  </div>
               </div>
             ))}
           </div>
