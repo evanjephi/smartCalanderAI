@@ -10,6 +10,7 @@ interface CalendarViewProps {
   year: number;
   onMonthChange: (month: number) => void;
   onYearChange: (year: number) => void;
+  onDateClick?: (date: Date, slots: TimeSlot[]) => void;
 }
 
 export default function CalendarView({
@@ -18,6 +19,7 @@ export default function CalendarView({
   year,
   onMonthChange,
   onYearChange,
+  onDateClick,
 }: CalendarViewProps) {
   const monthNames = [
     'January',
@@ -50,7 +52,10 @@ export default function CalendarView({
 
   const getSlotsByDate = (day: number) => {
     const date = new Date(year, month - 1, day);
-    return timeSlots.filter((slot) => slot.date.toDateString() === date.toDateString());
+    return timeSlots.filter((slot) => {
+      const slotDate = slot.date instanceof Date ? slot.date : new Date(String(slot.date));
+      return slotDate.toDateString() === date.toDateString();
+    });
   };
 
   const handlePrevMonth = () => {
@@ -123,6 +128,12 @@ export default function CalendarView({
                       : 'border-gray-200 bg-gray-50'
                   : 'bg-gray-100'
               }`}
+              onClick={() => {
+                if (day) {
+                  const date = new Date(year, month - 1, day);
+                  onDateClick?.(date, slots);
+                }
+              }}
             >
               {day && (
                 <>
